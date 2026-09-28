@@ -25,6 +25,10 @@ def num_eights(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n // 10 == 0:
+        return int(n % 10 == 8)
+    else:
+        return int(n % 10 == 8) + num_eights(n // 10)
 
 
 def digit_distance(n):
@@ -47,6 +51,11 @@ def digit_distance(n):
     True
     """
     "*** YOUR CODE HERE ***"
+    if n < 10:
+        return 0
+    else:
+        current_num, next_num = n % 10, n // 10 % 10
+        return digit_distance(n // 10) + abs(current_num - next_num)
 
 
 def interleaved_sum(n, odd_func, even_func):
@@ -71,6 +80,14 @@ def interleaved_sum(n, odd_func, even_func):
     True
     """
     "*** YOUR CODE HERE ***"
+    def count_iteration(num_count): 
+        if n == num_count:
+            return odd_func(num_count)
+        elif n == num_count + 1:
+            return odd_func(num_count) + even_func(num_count + 1)
+        else:
+            return odd_func(num_count) + even_func(num_count + 1) + count_iteration(num_count + 2) 
+    return count_iteration(1)
 
 
 def next_smaller_dollar(bill):
@@ -107,6 +124,16 @@ def count_dollars(total):
     True
     """
     "*** YOUR CODE HERE ***"
+    def count_iteration(total_left, current_bill):
+        if total_left < 0:
+            return 0
+        elif total_left == 0 or current_bill == 1:
+            return 1
+        elif total_left < current_bill:
+            return count_iteration(total_left, next_smaller_dollar(current_bill))
+        else:
+            return count_iteration(total_left, next_smaller_dollar(current_bill)) + count_iteration(total_left - current_bill, current_bill)
+    return count_iteration(total, 100)
 
 
 def next_larger_dollar(bill):
@@ -143,6 +170,13 @@ def count_dollars_upward(total):
     True
     """
     "*** YOUR CODE HERE ***"
+    def count_iteration(total_left, current_bill):
+        if total_left < current_bill:
+            return 0
+        elif total_left == 0 or (current_bill == 100 and total_left % 100 == 0):
+            return 1
+        else:  
+            return count_iteration(total_left - current_bill, current_bill) + count_iteration(total_left, next_larger_dollar(current_bill))
 
 
 def print_move(origin, destination):
@@ -178,6 +212,12 @@ def move_stack(n, start, end):
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
     "*** YOUR CODE HERE ***"
+    if n == 1:
+        print_move(start, end)
+    else:
+        mid = 6 - start - end
+        move_stack(n - 1, start, mid)
+        move_stack(n - 1, mid, end)
 
 
 from operator import sub, mul
@@ -193,5 +233,5 @@ def make_anonymous_factorial():
     ...     ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    return lambda x: max(mul(x, make_anonymous_factorial()(sub(x, 1))), 1)
 
